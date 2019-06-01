@@ -9,6 +9,11 @@ driver::~driver()
 
 }
 
+void driver::initialize_mpu9250()
+{
+    write_mpu9250_register(driver::register_mpu9250_type::INT_BYP_CFG, 0x22);
+}
+
 unsigned char driver::mpu9250_who_am_i()
 {
     return read_mpu9250_register(register_mpu9250_type::WHO_AM_I);

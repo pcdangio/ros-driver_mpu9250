@@ -11,12 +11,15 @@ public:
     virtual void initialize(unsigned int i2c_bus, unsigned int i2c_address) = 0;
     virtual void deinitialize() = 0;
 
+    void initialize_mpu9250();
+
     unsigned char mpu9250_who_am_i();
     unsigned char ak8963_who_am_i();
 
 protected:
     enum class register_mpu9250_type
     {
+        INT_BYP_CFG = 0x67,
         WHO_AM_I = 0x75
     };
     enum class register_ak8963_type

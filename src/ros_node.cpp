@@ -18,11 +18,14 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     int param_i2c_address;
     private_node.param<int>("i2c_address", param_i2c_address, 0x68);
 
-    // Initialize the driver.
+    // Initialize the driver and chips.
     try
     {
         ros_node::m_driver->initialize(static_cast<unsigned int>(param_i2c_bus), static_cast<unsigned int>(param_i2c_address));
         ROS_INFO_STREAM("MPU9250 driver successfully initialized on I2C bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address << ".");
+
+        // Initialize the MPU9250.
+        ros_node::m_driver->initialize_mpu9250();
     }
     catch (std::exception& e)
     {
@@ -49,7 +52,7 @@ void ros_node::spin()
         {
             // Select front sensor.
             unsigned char who_am_i = ros_node::m_driver->ak8963_who_am_i();
-            ROS_INFO_STREAM(who_am_i);
+            ROS_INFO_STREAM(std::hex << who_am_i);
         }
         catch(std::exception& e)
         {
