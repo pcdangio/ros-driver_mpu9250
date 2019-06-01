@@ -48,7 +48,7 @@ void ros_node::spin()
         try
         {
             // Select front sensor.
-            unsigned char who_am_i = ros_node::m_driver->mpu9250_who_am_i();
+            unsigned char who_am_i = ros_node::m_driver->ak8963_who_am_i();
             ROS_INFO_STREAM(who_am_i);
         }
         catch(std::exception& e)
