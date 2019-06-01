@@ -12,15 +12,25 @@ public:
     virtual void deinitialize() = 0;
 
     unsigned char mpu9250_who_am_i();
+    unsigned char ak8963_who_am_i();
 
 protected:
-    enum class register_type
+    enum class register_mpu9250_type
     {
-        MPU9250_WHO_AM_I = 0x75
+        WHO_AM_I = 0x75
+    };
+    enum class register_ak8963_type
+    {
+        WHO_AM_I = 0x00
     };
 
-    virtual void write_register(register_type address, unsigned char value) = 0;
-    virtual unsigned char read_register(register_type address) = 0;
+    virtual void write_mpu9250_register(register_mpu9250_type address, unsigned char value) = 0;
+    virtual unsigned char read_mpu9250_register(register_mpu9250_type address) = 0;
+
+    virtual void write_ak8963_register(register_ak8963_type address, unsigned char value) = 0;
+    virtual unsigned char read_ak8963_register(register_ak8963_type address) = 0;
+
+
 };
 
 #endif // DRIVER_H
