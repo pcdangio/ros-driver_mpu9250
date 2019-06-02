@@ -4,6 +4,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <cmath>
+#include <limits>
 
 driver::driver()
 {
@@ -14,10 +15,16 @@ driver::~driver()
 
 }
 
-void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address)
+void driver::set_data_callback(std::function<void (data)> callback)
+{
+    // Store the callback.
+    driver::m_data_callback = callback;
+}
+
+void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address, unsigned int interrupt_gpio_pin)
 {
     // Initialize I2C:
-    initialize_i2c(i2c_bus, i2c_address);
+    initialize_i2c(i2c_bus, i2c_address, interrupt_gpio_pin);
 
     // Test MPU9250 communications.
     try
@@ -44,6 +51,8 @@ void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address)
 
     // Set interrupt pin to latch, and enable I2C bypass mode for access to AK8963.
     write_mpu9250_register(driver::register_mpu9250_type::INT_BYP_CFG, 0x22);
+    // Enable interrupt pin for raw data ready.
+    write_mpu9250_register(driver::register_mpu9250_type::INT_ENABLE, 0x01);
 
     // Wake up chip.
     write_mpu9250_register(driver::register_mpu9250_type::PWR_MGMT_1, 0x00);
@@ -260,4 +269,62 @@ void driver::p_accel_fsr(accel_fsr_type fsr)
         break;
     }
     }
+}
+
+void driver::read_data()
+{
+    // Create data storage structure.
+    driver::data data;
+
+    // Burst read accelerometer data.
+    char accel_buffer[6];
+    read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 6, accel_buffer);
+    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[0]) << 8 | accel_buffer[1]) / 32767.0f;
+    data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[2]) << 8 | accel_buffer[3]) / 32767.0f;
+    data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[4]) << 8 | accel_buffer[5]) / 32767.0f;
+
+    // Burst read gyro data.
+    char gyro_buffer[6];
+    read_mpu9250_registers(driver::register_mpu9250_type::GYRO_X_HIGH, 6, gyro_buffer);
+    data.gyro_x = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[0]) << 8 | gyro_buffer[1]) / 32767.0f;
+    data.gyro_y = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[2]) << 8 | gyro_buffer[3]) / 32767.0f;
+    data.gyro_z = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[4]) << 8 | gyro_buffer[5]) / 32767.0f;
+
+    // Burst read magnetometer data.
+    char magneto_buffer[7];
+    read_ak8963_registers(driver::register_ak8963_type::X_LOW, 7, magneto_buffer);
+    // Check if there was a magnetic overflow.
+    if(magneto_buffer[6] & 0x08)
+    {
+        // Magnetic overflow occured and data is invalid.
+        data.magneto_x = std::numeric_limits<float>::quiet_NaN();
+        data.magneto_y = std::numeric_limits<float>::quiet_NaN();
+        data.magneto_z = std::numeric_limits<float>::quiet_NaN();
+    }
+    else
+    {
+        // Get the measurement resolution.
+        float resolution;
+        if(magneto_buffer[6] & 0x10)
+        {
+            // 16 bit signed integer
+            resolution = 32767.0f;
+        }
+        else
+        {
+            // 14 bit signed integer
+            resolution = 17777.0f;
+        }
+
+        // Store measurements.
+        data.magneto_x = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[1] << 8 | magneto_buffer[0])) / resolution;
+        data.magneto_y = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[3] << 8 | magneto_buffer[2])) / resolution;
+        data.magneto_z = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[5] << 8 | magneto_buffer[4])) / resolution;
+    }
+
+    // Read interrupt status register to clear interrupt.
+    read_mpu9250_register(driver::register_mpu9250_type::INT_STATUS);
+
+    // Initiate the data callback.
+    driver::m_data_callback(data);
 }

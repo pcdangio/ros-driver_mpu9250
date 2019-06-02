@@ -43,6 +43,8 @@ private:
     /// \brief deinitialize_driver Deinitializes the driver.
     ///
     void deinitialize_driver();
+
+    void data_callback(driver::data data);
 };
 
 #endif // ROS_NODE_H
