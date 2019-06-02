@@ -1,6 +1,9 @@
 #include "driver.h"
 
+#include <stdexcept>
+#include <sstream>
 #include <unistd.h>
+#include <cmath>
 
 driver::driver()
 {
@@ -11,21 +14,250 @@ driver::~driver()
 
 }
 
-void driver::initialize_mpu9250()
+void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address)
 {
-    write_mpu9250_register(driver::register_mpu9250_type::PWR_MGMT_1, 0x00);
-    usleep(100000);
+    // Initialize I2C:
+    initialize_i2c(i2c_bus, i2c_address);
 
+    // Test MPU9250 communications.
+    try
+    {
+        if(read_mpu9250_register(register_mpu9250_type::WHO_AM_I) != 0x71)
+        {
+            throw std::runtime_error("MPU9250 device ID mismatch.");
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::stringstream message;
+        message << "MPU9250 communications failure: " << e.what();
+        throw std::runtime_error(message.str());
+    }
 
+    // Power on MPU9250 sensors.
+    write_mpu9250_register(register_mpu9250_type::PWR_MGMT_1, 0x00);
+    // Sleep for 50ms to let sensors come online.
+    usleep(50000);
+
+    // Change clock source to PLL from gyro.
+    write_mpu9250_register(register_mpu9250_type::PWR_MGMT_1, 0x01);
+
+    // Set interrupt pin to latch, and enable I2C bypass mode for access to AK8963.
     write_mpu9250_register(driver::register_mpu9250_type::INT_BYP_CFG, 0x22);
-    usleep(100000);
+
+    // Wake up chip.
+    write_mpu9250_register(driver::register_mpu9250_type::PWR_MGMT_1, 0x00);
+
+    // Test AK8963 communications.
+    try
+    {
+        if(read_ak8963_register(register_ak8963_type::WHO_AM_I) != 0x48)
+        {
+            throw std::runtime_error("AK8963 device ID mismatch.");
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::stringstream message;
+        message << "AK8963 communications failure: " << e.what();
+        throw std::runtime_error(message.str());
+    }
+
+    // Power on magnetometer at 16bit resolution with 100Hz sample rate.
+    write_ak8963_register(register_ak8963_type::CONTROL_1, 0x16);
 }
 
-unsigned char driver::mpu9250_who_am_i()
+void driver::p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_dlpf_frequency_type accel_frequency)
 {
-    return read_mpu9250_register(register_mpu9250_type::WHO_AM_I);
+    // Read the current configuration for gyro/temp.
+    unsigned char gyro_configuration = read_mpu9250_register(register_mpu9250_type::CONFIG);
+    // Clear the DLPF_CFG field (0:2)
+    gyro_configuration &= 0xF8;
+    // Set the DLPF_CFG field.
+    gyro_configuration |= static_cast<unsigned char>(gyro_frequency);
+    // Write new configuration.
+    write_mpu9250_register(register_mpu9250_type::CONFIG, gyro_configuration);
+
+    // Set up the new configuration for the accel.
+    // FCHOICE = 0b1, but needs to be specified as inverse (0b0).
+    write_mpu9250_register(register_mpu9250_type::ACCEL_CONFIG_2, static_cast<unsigned char>(accel_frequency));
+
+    // Calculate new sample rate.
+
+    // Get dlpf/internal frqeuencies for both gyro and accel.
+    unsigned int gyro_dlpf_frequency = 0;
+    unsigned int gyro_internal_frequency = 0;
+    // These values populated from data sheet.
+    switch(gyro_frequency)
+    {
+    case driver::gyro_dlpf_frequency_type::F_5HZ:
+    {
+        gyro_dlpf_frequency = 5;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_10Hz:
+    {
+        gyro_dlpf_frequency = 10;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_20Hz:
+    {
+        gyro_dlpf_frequency = 20;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_41HZ:
+    {
+        gyro_dlpf_frequency = 41;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_92HZ:
+    {
+        gyro_dlpf_frequency = 92;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_184HZ:
+    {
+        gyro_dlpf_frequency = 184;
+        gyro_internal_frequency = 1000;
+        break;
+    }
+    case driver::gyro_dlpf_frequency_type::F_250HZ:
+    {
+        gyro_dlpf_frequency = 250;
+        gyro_internal_frequency = 8000;
+        break;
+    }
+    }
+
+    unsigned int accel_dlpf_frequency = 0;
+    unsigned int accel_internal_frequency = 1000; // Same for all dlpf frequencies.
+    switch(accel_frequency)
+    {
+    case driver::accel_dlpf_frequency_type::F_5HZ:
+    {
+        accel_dlpf_frequency = 5;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_10HZ:
+    {
+        accel_dlpf_frequency = 10;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_20HZ:
+    {
+        accel_dlpf_frequency = 20;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_41HZ:
+    {
+        accel_dlpf_frequency = 41;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_92HZ:
+    {
+        accel_dlpf_frequency = 92;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_184HZ:
+    {
+        accel_dlpf_frequency = 184;
+        break;
+    }
+    case driver::accel_dlpf_frequency_type::F_460HZ:
+    {
+        accel_dlpf_frequency = 460;
+        break;
+    }
+    }
+
+    // Determine the maximum dlpf frequency.
+    unsigned int internal_frequency = 0;
+    unsigned int dlpf_frequency = 0;
+    if(accel_dlpf_frequency > gyro_dlpf_frequency)
+    {
+        internal_frequency = accel_internal_frequency;
+        dlpf_frequency = accel_dlpf_frequency;
+    }
+    else
+    {
+        internal_frequency = gyro_internal_frequency;
+        dlpf_frequency = gyro_dlpf_frequency;
+    }
+
+    // Calculate frequency divider.
+    // NOTE: Temp DLPF bandwidth is always a few hertz higher than gyro, but use of 0.5 on top of 2x multiplier (nyquist) gives enough headroom.
+    unsigned int frequency_divider = static_cast<unsigned int>(std::round(static_cast<float>(internal_frequency) / (static_cast<float>(dlpf_frequency) * 2.5f)));
+    unsigned int sample_frequency = internal_frequency / frequency_divider;
+
+    // Set the sample rate divider (formula is INTERNAL_SAMPLE_RATE / (1 + DIVIDER)
+    write_mpu9250_register(register_mpu9250_type::SAMPLE_RATE_DIVIDER, static_cast<unsigned char>(frequency_divider - 1));
+
+    // Store the new sample frequency.
+    driver::m_sample_rate = sample_frequency;
 }
-unsigned char driver::ak8963_who_am_i()
+void driver::p_gyro_fsr(gyro_fsr_type fsr)
 {
-    return read_ak8963_register(register_ak8963_type::WHO_AM_I);
+    // Write FSR + fchoice to register.
+    // FChoice = 0b11, but needs to be supplied inverted (=0b00)
+    write_mpu9250_register(register_mpu9250_type::GYRO_CONFIG, static_cast<unsigned char>(fsr));
+
+    // Store the fsr.
+    switch(fsr)
+    {
+    case driver::gyro_fsr_type::DPS_250:
+    {
+        driver::m_gyro_fsr = 250.0f;
+        break;
+    }
+    case driver::gyro_fsr_type::DPS_500:
+    {
+        driver::m_gyro_fsr = 500.0f;
+        break;
+    }
+    case driver::gyro_fsr_type::DPS_1000:
+    {
+        driver::m_gyro_fsr = 1000.0f;
+        break;
+    }
+    case driver::gyro_fsr_type::DPS_2000:
+    {
+        driver::m_gyro_fsr = 2000.0f;
+        break;
+    }
+    }
+}
+void driver::p_accel_fsr(accel_fsr_type fsr)
+{
+    // Write accel FSR to register.
+    write_mpu9250_register(register_mpu9250_type::ACCEL_CONFIG, static_cast<unsigned char>(fsr));
+
+    // Store the fsr.
+    switch(fsr)
+    {
+    case driver::accel_fsr_type::G_2:
+    {
+        driver::m_accel_fsr = 2.0f;
+        break;
+    }
+    case driver::accel_fsr_type::G_4:
+    {
+        driver::m_accel_fsr = 4.0f;
+        break;
+    }
+    case driver::accel_fsr_type::G_8:
+    {
+        driver::m_accel_fsr = 8.0f;
+        break;
+    }
+    case driver::accel_fsr_type::G_16:
+    {
+        driver::m_accel_fsr = 16.0f;
+        break;
+    }
+    }
 }

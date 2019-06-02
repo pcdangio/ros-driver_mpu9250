@@ -15,13 +15,13 @@ rpi_driver::~rpi_driver()
     rpi_driver::deinitialize();
 }
 
-void rpi_driver::initialize(unsigned int i2c_bus, unsigned int i2c_address)
+void rpi_driver::initialize_i2c(unsigned int i2c_bus, unsigned int i2c_address)
 {
     // Connect to the pigpio daemon.
     int result = pigpio_start(nullptr, nullptr);
     if(result < 0)
     {
-        throw std::runtime_error("initialize: Failed to connect to pigpio daemon.");
+        throw std::runtime_error("initialize_i2c: Failed to connect to pigpio daemon.");
     }
     rpi_driver::m_pigpio_handle = result;
 
@@ -78,31 +78,31 @@ int rpi_driver::open_i2c(unsigned int i2c_bus, unsigned int i2c_address)
         case PI_BAD_I2C_BUS:
         {
             std::stringstream message;
-            message << "initialize: Specified invalid I2C bus: " << i2c_bus;
+            message << "initialize_i2c: Specified invalid I2C bus: " << i2c_bus;
             throw std::runtime_error(message.str());
         }
         case PI_BAD_I2C_ADDR:
         {
             std::stringstream message;
-            message << "initialize: Specified invalid I2C address: 0x" << std::hex << i2c_address;
+            message << "initialize_i2c: Specified invalid I2C address: 0x" << std::hex << i2c_address;
             throw std::runtime_error(message.str());
         }
         case PI_BAD_FLAGS:
         {
-            throw std::runtime_error("initialize: Specified invalid I2C flags.");
+            throw std::runtime_error("initialize_i2c: Specified invalid I2C flags.");
         }
         case PI_NO_HANDLE:
         {
-            throw std::runtime_error("initialize: No handle.");
+            throw std::runtime_error("initialize_i2c: No handle.");
         }
         case PI_I2C_OPEN_FAILED:
         {
-            throw std::runtime_error("initialize: Failed to open I2C.");
+            throw std::runtime_error("initialize_i2c: Failed to open I2C.");
         }
         default:
         {
             std::stringstream message;
-            message << "initialize: Unknown error: " << result;
+            message << "initialize_i2c: Unknown error: " << result;
             throw std::runtime_error(message.str());
         }
         }

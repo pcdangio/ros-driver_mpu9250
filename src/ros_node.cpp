@@ -17,15 +17,25 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     private_node.param<int>("i2c_bus", param_i2c_bus, 1);
     int param_i2c_address;
     private_node.param<int>("i2c_address", param_i2c_address, 0x68);
+    int param_gyro_dlpf_frequency;
+    private_node.param<int>("gyro_dlpf_frequency", param_gyro_dlpf_frequency, 0);
+    int param_accel_dlpf_frequency;
+    private_node.param<int>("accel_dlpf_frequency", param_accel_dlpf_frequency, 0);
+    int param_gyro_fsr;
+    private_node.param<int>("gyro_fsr", param_gyro_fsr, 0);
+    int param_accel_fsr;
+    private_node.param<int>("accel_fsr", param_accel_fsr, 0);
 
-    // Initialize the driver and chips.
+    // Initialize the driver and set parameters.
     try
     {
         ros_node::m_driver->initialize(static_cast<unsigned int>(param_i2c_bus), static_cast<unsigned int>(param_i2c_address));
-        ROS_INFO_STREAM("MPU9250 driver successfully initialized on I2C bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address << ".");
+        // Set parameters.
+        ros_node::m_driver->p_dlpf_frequencies(static_cast<driver::gyro_dlpf_frequency_type>(param_gyro_dlpf_frequency), static_cast<driver::accel_dlpf_frequency_type>(param_accel_dlpf_frequency));
+        ros_node::m_driver->p_gyro_fsr(static_cast<driver::gyro_fsr_type>(param_gyro_fsr));
+        ros_node::m_driver->p_accel_fsr(static_cast<driver::accel_fsr_type>(param_accel_fsr));
 
-        // Initialize the MPU9250.
-        ros_node::m_driver->initialize_mpu9250();
+        ROS_INFO_STREAM("MPU9250 driver successfully initialized on I2C bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address << ".");
     }
     catch (std::exception& e)
     {
@@ -45,19 +55,6 @@ ros_node::~ros_node()
 
 void ros_node::spin()
 {
-    try
-    {
-        unsigned char who_am_i_mpu9250 = ros_node::m_driver->mpu9250_who_am_i();
-        ROS_INFO_STREAM(std::hex << who_am_i_mpu9250);
-
-        unsigned char who_am_i_ak8963 = ros_node::m_driver->ak8963_who_am_i();
-        ROS_INFO_STREAM(std::hex << who_am_i_ak8963);
-    }
-    catch(std::exception& e)
-    {
-        ROS_WARN_STREAM(e.what());
-    }
-
     // Loop
     while(ros::ok())
     {

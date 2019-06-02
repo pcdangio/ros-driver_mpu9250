@@ -9,7 +9,7 @@ public:
     rpi_driver();
     ~rpi_driver() override;
 
-    void initialize(unsigned int i2c_bus, unsigned int i2c_address) override;
+    void initialize_i2c(unsigned int i2c_bus, unsigned int i2c_address) override;
     void deinitialize() override;
 
 private:
