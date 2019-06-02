@@ -45,19 +45,23 @@ ros_node::~ros_node()
 
 void ros_node::spin()
 {
+    try
+    {
+        unsigned char who_am_i_mpu9250 = ros_node::m_driver->mpu9250_who_am_i();
+        ROS_INFO_STREAM(std::hex << who_am_i_mpu9250);
+
+        unsigned char who_am_i_ak8963 = ros_node::m_driver->ak8963_who_am_i();
+        ROS_INFO_STREAM(std::hex << who_am_i_ak8963);
+    }
+    catch(std::exception& e)
+    {
+        ROS_WARN_STREAM(e.what());
+    }
+
     // Loop
     while(ros::ok())
     {
-        try
-        {
-            // Select front sensor.
-            unsigned char who_am_i = ros_node::m_driver->ak8963_who_am_i();
-            ROS_INFO_STREAM(std::hex << who_am_i);
-        }
-        catch(std::exception& e)
-        {
-            ROS_WARN_STREAM(e.what());
-        }
+
     }
 
     // Deinitialize driver.

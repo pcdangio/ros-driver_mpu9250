@@ -20,6 +20,7 @@ protected:
     enum class register_mpu9250_type
     {
         INT_BYP_CFG = 0x67,
+        PWR_MGMT_1 = 0x6B,
         WHO_AM_I = 0x75
     };
     enum class register_ak8963_type
