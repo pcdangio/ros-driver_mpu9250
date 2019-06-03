@@ -111,17 +111,22 @@ void ros_node::data_callback(driver::data data)
     message_imu.angular_velocity.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;
     message_imu.angular_velocity.z = static_cast<double>(data.gyro_z) * M_PI / 180.0;
     // Leave covariance matrices at zero.
-
-    // Create magneto message.
-    sensor_msgs::MagneticField message_mag;
-    message_mag.header = message_imu.header;
-    // Fill magnetic field strengths (convert from uT to T)
-    message_mag.magnetic_field.x = static_cast<double>(data.magneto_x) * 0.000001;
-    message_mag.magnetic_field.y = static_cast<double>(data.magneto_y) * 0.000001;
-    message_mag.magnetic_field.z = static_cast<double>(data.magneto_z) * 0.000001;
-    // Leave covariance matrices at zero.
-
-    // Publish both messages.
+    // Publish IMU message.
     ros_node::m_publisher_imu.publish(message_imu);
-    ros_node::m_publisher_mag.publish(message_mag);
+
+    // Check if there was a magneto overflow.
+    if(isnan(data.magneto_x) == false)
+    {
+        // Create magneto message.
+        sensor_msgs::MagneticField message_mag;
+        message_mag.header = message_imu.header;
+        // Fill magnetic field strengths (convert from uT to T)
+        message_mag.magnetic_field.x = static_cast<double>(data.magneto_x) * 0.000001;
+        message_mag.magnetic_field.y = static_cast<double>(data.magneto_y) * 0.000001;
+        message_mag.magnetic_field.z = static_cast<double>(data.magneto_z) * 0.000001;
+        // Leave covariance matrices at zero.
+
+        // Publish magneto message.
+        ros_node::m_publisher_mag.publish(message_mag);
+    }
 }
