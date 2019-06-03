@@ -85,5 +85,5 @@ void ros_node::deinitialize_driver()
 
 void ros_node::data_callback(driver::data data)
 {
-    ROS_INFO_STREAM(data.accel_x);
+    ROS_INFO_STREAM(data.accel_x << "\t" << data.accel_y << "\t" << data.accel_z);
 }
