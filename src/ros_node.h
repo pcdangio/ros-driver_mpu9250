@@ -1,3 +1,5 @@
+/// \file ros_node.h
+/// \brief Defines the ros_node class.
 #ifndef ROS_NODE_H
 #define ROS_NODE_H
 
@@ -37,7 +39,13 @@ private:
     /// \brief m_node The node's handle.
     ///
     ros::NodeHandle* m_node;
+    ///
+    /// \brief m_publisher_imu The publisher for IMU messages.
+    ///
     ros::Publisher m_publisher_imu;
+    ///
+    /// \brief m_publisher_mag The publisher for MagneticField messages.
+    ///
     ros::Publisher m_publisher_mag;
 
     // METHODS
@@ -46,6 +54,10 @@ private:
     ///
     void deinitialize_driver();
 
+    ///
+    /// \brief data_callback The callback function for when new data is available.
+    /// \param data The latest data read from the MPU9250/AK8963.
+    ///
     void data_callback(driver::data data);
 };
 

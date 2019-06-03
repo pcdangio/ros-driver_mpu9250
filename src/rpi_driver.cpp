@@ -100,12 +100,12 @@ void rpi_driver::initialize_i2c(unsigned int i2c_bus, unsigned int i2c_address, 
         }
     }
 }
-void rpi_driver::deinitialize()
+void rpi_driver::deinitialize_i2c()
 {
     // Cancel callbacks.
     if(rpi_driver::m_interrupt_callback_handle >= 0)
     {
-        callback_cancel(rpi_driver::m_interrupt_callback_handle);
+        callback_cancel(static_cast<unsigned int>(rpi_driver::m_interrupt_callback_handle));
     }
     // Close the I2C connections.
     if(rpi_driver::m_ak8963_i2c_handle >= 0)

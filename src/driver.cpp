@@ -75,6 +75,17 @@ void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address, unsigned
     // Power on magnetometer at 16bit resolution with 100Hz sample rate.
     write_ak8963_register(register_ak8963_type::CONTROL_1, 0x16);
 }
+void driver::deinitialize()
+{
+    // Power down the AK8963.
+    write_ak8963_register(register_ak8963_type::CONTROL_1, 0x00);
+
+    // Power down the MPU9250.
+    write_mpu9250_register(register_mpu9250_type::PWR_MGMT_1, 0x40);
+
+    // Deinit I2C.
+    deinitialize_i2c();
+}
 
 void driver::p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_dlpf_frequency_type accel_frequency)
 {
