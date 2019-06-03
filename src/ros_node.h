@@ -37,6 +37,8 @@ private:
     /// \brief m_node The node's handle.
     ///
     ros::NodeHandle* m_node;
+    ros::Publisher m_publisher_imu;
+    ros::Publisher m_publisher_mag;
 
     // METHODS
     ///
