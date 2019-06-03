@@ -2,6 +2,7 @@
 
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include <sensor_msgs/Temperature.h>
 
 #include <cmath>
 
@@ -34,8 +35,9 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     private_node.param<int>("accel_fsr", param_accel_fsr, 0);
 
     // Set up publishers.
-    ros_node::m_publisher_imu = ros_node::m_node->advertise<sensor_msgs::Imu>("imu/imu", 10);
-    ros_node::m_publisher_mag = ros_node::m_node->advertise<sensor_msgs::MagneticField>("imu/magneto", 10);
+    ros_node::m_publisher_imu = ros_node::m_node->advertise<sensor_msgs::Imu>("imu/imu", 1);
+    ros_node::m_publisher_mag = ros_node::m_node->advertise<sensor_msgs::MagneticField>("imu/magneto", 1);
+    ros_node::m_publisher_temp = ros_node::m_node->advertise<sensor_msgs::Temperature>("imu/temperature", 1);
 
     // Initialize the driver and set parameters.
     try
@@ -129,4 +131,12 @@ void ros_node::data_callback(driver::data data)
         // Publish magneto message.
         ros_node::m_publisher_mag.publish(message_mag);
     }
+
+    // Create temperature message.
+    sensor_msgs::Temperature message_temp;
+    message_temp.header = message_imu.header;
+    message_temp.temperature = static_cast<double>(data.temp);
+    message_temp.variance = 0.0;
+    // Publish temperature message.
+    ros_node::m_publisher_temp.publish(message_temp);
 }

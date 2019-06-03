@@ -287,19 +287,24 @@ void driver::read_data()
     // Create data storage structure.
     driver::data data;
 
-    // Burst read accelerometer data.
-    char accel_buffer[6];
-    read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 6, accel_buffer);
-    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[0]) << 8) | static_cast<short>(accel_buffer[1])) / 32768.0f;
-    data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[2]) << 8) | static_cast<short>(accel_buffer[3])) / 32768.0f;
-    data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[4]) << 8) | static_cast<short>(accel_buffer[5])) / 32768.0f;
+    // Burst read accel, temp, and gyro data.
+    char atg_buffer[14];
+    read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 14, atg_buffer);
 
-    // Burst read gyro data.
-    char gyro_buffer[6];
-    read_mpu9250_registers(driver::register_mpu9250_type::GYRO_X_HIGH, 6, gyro_buffer);
-    data.gyro_x = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[0]) << 8) | static_cast<short>(gyro_buffer[1])) / 32768.0f;
-    data.gyro_y = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[2]) << 8) | static_cast<short>(gyro_buffer[3])) / 32768.0f;
-    data.gyro_z = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[4]) << 8) | static_cast<short>(gyro_buffer[5])) / 32768.0f;
+    // Parse out accel data.
+    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[0]) << 8) | static_cast<short>(atg_buffer[1])) / 32768.0f;
+    data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[2]) << 8) | static_cast<short>(atg_buffer[3])) / 32768.0f;
+    data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[4]) << 8) | static_cast<short>(atg_buffer[5])) / 32768.0f;
+
+    // Parse out temperature data.
+    // Formula is DegC = ((raw - roomtemp_offset)/temp_sensitivity) + 21
+    // Apparently, roomtemp_offset = 0, and temp sensitivty = 321
+    data.temp = static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[6]) << 8) | static_cast<short>(atg_buffer[7])) / 321.0f + 21.0f;
+
+    // Parse out gyro data.
+    data.gyro_x = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[8]) << 8) | static_cast<short>(atg_buffer[9])) / 32768.0f;
+    data.gyro_y = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[10]) << 8) | static_cast<short>(atg_buffer[11])) / 32768.0f;
+    data.gyro_z = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[12]) << 8) | static_cast<short>(atg_buffer[13])) / 32768.0f;
 
     // Burst read magnetometer data.
     char magneto_buffer[7];

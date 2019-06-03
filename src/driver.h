@@ -68,6 +68,7 @@ public:
         float accel_x, accel_y, accel_z;
         float gyro_x, gyro_y, gyro_z;
         float magneto_x, magneto_y, magneto_z;
+        float temp;
     };
 
     // CONSTRUCTORS
@@ -140,6 +141,8 @@ protected:
         ACCEL_Y_LOW = 0x3E,
         ACCEL_Z_HIGH = 0x3F,
         ACCEL_Z_LOW = 0x40,
+        TEMP_HIGH = 0x41,
+        TEMP_LOW = 0x42,
         GYRO_X_HIGH = 0x43,
         GYRO_X_LOW = 0x44,
         GYRO_Y_HIGH = 0x45,

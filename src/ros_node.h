@@ -47,6 +47,10 @@ private:
     /// \brief m_publisher_mag The publisher for MagneticField messages.
     ///
     ros::Publisher m_publisher_mag;
+    ///
+    /// \brief m_publisher_temp The publisher for Temperature messages.
+    ///
+    ros::Publisher m_publisher_temp;
 
     // METHODS
     ///
