@@ -212,13 +212,9 @@ void driver::p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_d
     // Calculate frequency divider.
     // NOTE: Temp DLPF bandwidth is always a few hertz higher than gyro, but use of 0.5 on top of 2x multiplier (nyquist) gives enough headroom.
     unsigned int frequency_divider = static_cast<unsigned int>(std::round(static_cast<float>(internal_frequency) / (static_cast<float>(dlpf_frequency) * 2.5f)));
-    unsigned int sample_frequency = internal_frequency / frequency_divider;
 
     // Set the sample rate divider (formula is INTERNAL_SAMPLE_RATE / (1 + DIVIDER)
     write_mpu9250_register(register_mpu9250_type::SAMPLE_RATE_DIVIDER, static_cast<unsigned char>(frequency_divider - 1));
-
-    // Store the new sample frequency.
-    driver::m_sample_rate = sample_frequency;
 }
 void driver::p_gyro_fsr(gyro_fsr_type fsr)
 {
