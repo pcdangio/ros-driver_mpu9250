@@ -33,6 +33,10 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     int param_accel_fsr;
     private_node.param<int>("accel_fsr", param_accel_fsr, 0);
 
+    // Set up publishers.
+    ros_node::m_publisher_imu = ros_node::m_node->advertise<sensor_msgs::Imu>("imu/imu", 10);
+    ros_node::m_publisher_mag = ros_node::m_node->advertise<sensor_msgs::MagneticField>("imu/magneto", 10);
+
     // Initialize the driver and set parameters.
     try
     {
@@ -55,10 +59,6 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
         // Quit the node.
         ros::shutdown();
     }
-
-    // Set up publishers.
-    ros_node::m_publisher_imu = ros_node::m_node->advertise<sensor_msgs::Imu>("imu/imu", 10);
-    ros_node::m_publisher_mag = ros_node::m_node->advertise<sensor_msgs::MagneticField>("imu/magneto", 10);
 }
 ros_node::~ros_node()
 {
