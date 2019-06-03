@@ -57,6 +57,10 @@ void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address, unsigned
     // Wake up chip.
     write_mpu9250_register(driver::register_mpu9250_type::PWR_MGMT_1, 0x00);
 
+    // Follow default FSR values.
+    driver::m_gyro_fsr = 250.0f;
+    driver::m_accel_fsr = 2.0f;
+
     // Test AK8963 communications.
     try
     {
