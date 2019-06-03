@@ -41,8 +41,8 @@ void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address, unsigned
         throw std::runtime_error(message.str());
     }
 
-    // Power on MPU9250 sensors.
-    write_mpu9250_register(register_mpu9250_type::PWR_MGMT_1, 0x00);
+    // Power on MPU9250 sensors and reset default settings.
+    write_mpu9250_register(register_mpu9250_type::PWR_MGMT_1, 0x80);
     // Sleep for 50ms to let sensors come online.
     usleep(50000);
 
@@ -279,16 +279,16 @@ void driver::read_data()
     // Burst read accelerometer data.
     char accel_buffer[6];
     read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 6, accel_buffer);
-    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[0]) << 8 | accel_buffer[1]) / 32767.0f;
-    data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[2]) << 8 | accel_buffer[3]) / 32767.0f;
-    data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(accel_buffer[4]) << 8 | accel_buffer[5]) / 32767.0f;
+    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[0]) << 8) | static_cast<short>(accel_buffer[1])) / 32768.0f;
+    data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[2]) << 8) | static_cast<short>(accel_buffer[3])) / 32768.0f;
+    data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(accel_buffer[4]) << 8) | static_cast<short>(accel_buffer[5])) / 32768.0f;
 
     // Burst read gyro data.
     char gyro_buffer[6];
     read_mpu9250_registers(driver::register_mpu9250_type::GYRO_X_HIGH, 6, gyro_buffer);
-    data.gyro_x = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[0]) << 8 | gyro_buffer[1]) / 32767.0f;
-    data.gyro_y = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[2]) << 8 | gyro_buffer[3]) / 32767.0f;
-    data.gyro_z = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(gyro_buffer[4]) << 8 | gyro_buffer[5]) / 32767.0f;
+    data.gyro_x = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[0]) << 8) | static_cast<short>(gyro_buffer[1])) / 32768.0f;
+    data.gyro_y = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[2]) << 8) | static_cast<short>(gyro_buffer[3])) / 32768.0f;
+    data.gyro_z = driver::m_gyro_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(gyro_buffer[4]) << 8) | static_cast<short>(gyro_buffer[5])) / 32768.0f;
 
     // Burst read magnetometer data.
     char magneto_buffer[7];
@@ -308,18 +308,18 @@ void driver::read_data()
         if(magneto_buffer[6] & 0x10)
         {
             // 16 bit signed integer
-            resolution = 32767.0f;
+            resolution = 32768.0f;
         }
         else
         {
             // 14 bit signed integer
-            resolution = 17777.0f;
+            resolution = 17778.0f;
         }
 
         // Store measurements.
-        data.magneto_x = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[1] << 8 | magneto_buffer[0])) / resolution;
-        data.magneto_y = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[3] << 8 | magneto_buffer[2])) / resolution;
-        data.magneto_z = 4900.0f * static_cast<float>(static_cast<short>(magneto_buffer[5] << 8 | magneto_buffer[4])) / resolution;
+        data.magneto_x = 4900.0f * static_cast<float>(static_cast<short>(static_cast<unsigned short>(magneto_buffer[1]) << 8 | static_cast<short>(magneto_buffer[0]))) / resolution;
+        data.magneto_y = 4900.0f * static_cast<float>(static_cast<short>(static_cast<unsigned short>(magneto_buffer[3]) << 8 | static_cast<short>(magneto_buffer[2]))) / resolution;
+        data.magneto_z = 4900.0f * static_cast<float>(static_cast<short>(static_cast<unsigned short>(magneto_buffer[5]) << 8 | static_cast<short>(magneto_buffer[4]))) / resolution;
     }
 
     // Read interrupt status register to clear interrupt.
