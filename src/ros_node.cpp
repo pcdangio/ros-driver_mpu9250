@@ -24,7 +24,7 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     int param_i2c_address;
     private_node.param<int>("i2c_address", param_i2c_address, 0x68);
     int param_interrupt_pin;
-    private_node.param<int>("interrupt_gpio_pin", param_interrupt_pin, 4);
+    private_node.param<int>("interrupt_gpio_pin", param_interrupt_pin, 0);
     int param_gyro_dlpf_frequency;
     private_node.param<int>("gyro_dlpf_frequency", param_gyro_dlpf_frequency, 0);
     int param_accel_dlpf_frequency;
