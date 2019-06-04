@@ -11,6 +11,7 @@ SOURCES += \
 
 DISTFILES += \
     CMakeLists.txt \
+    README.md \
     package.xml
 
 HEADERS += \
