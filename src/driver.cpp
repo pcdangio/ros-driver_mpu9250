@@ -292,7 +292,9 @@ void driver::read_data()
     read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 14, atg_buffer);
 
     // Parse out accel data.
-    data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[0]) << 8) | static_cast<short>(atg_buffer[1])) / 32768.0f;
+
+    //data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[0]) << 8) | static_cast<short>(atg_buffer[1])) / 32768.0f;
+    data.accel_x = driver::m_accel_fsr * static_cast<float>(be16toh(*reinterpret_cast<short*>(&atg_buffer[0]))) / 32768.0f;
     data.accel_y = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[2]) << 8) | static_cast<short>(atg_buffer[3])) / 32768.0f;
     data.accel_z = driver::m_accel_fsr * static_cast<float>(static_cast<short>(static_cast<unsigned short>(atg_buffer[4]) << 8) | static_cast<short>(atg_buffer[5])) / 32768.0f;
 
