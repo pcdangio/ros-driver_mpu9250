@@ -21,7 +21,6 @@ rpi_driver::rpi_driver()
 }
 rpi_driver::~rpi_driver()
 {
-    rpi_driver::deinitialize();
 }
 
 void rpi_driver::initialize_i2c(unsigned int i2c_bus, unsigned int i2c_address, unsigned int interrupt_gpio_pin)
