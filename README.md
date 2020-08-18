@@ -22,7 +22,7 @@ The driver_mpu9250 package has been tested under [ROS] Melodic and Ubuntu 18.04.
 #### Dependencies
 
 - [Robot Operating System (ROS)](http://wiki.ros.org) (middleware for robotics)
-- [sensor_msgs](http://wiki.ros.org/sensor_msgs) (ROS sensor_msgs)
+- [sensor_msgs_ext](https://github.com/pcdangio/ros-sensor_msgs_ext) (ROS extended sensor messages)
 - [pigpio](http://abyz.me.uk/rpi/pigpio/) (Raspberry PI I/O)
 
 #### Building
@@ -52,11 +52,13 @@ A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running bef
 
 
 #### Published Topics
-* **`imu/imu`** ([sensor_msgs/Imu](http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html))
-        The acceleration and gyroscope measurements from the MPU9250.
-* **`imu/magneto`** ([sensor_msgs/MagneticField](http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html))
+* **`imu/accelerometer`** ([sensor_msgs_ext/accelerometer](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/accelerometer.msg))
+        The acceleration measurements from the MPU9250.
+* **`imu/gyroscope`** ([sensor_msgs_ext/gyroscope](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/gyroscope.msg))
+        The gyroscope measurements from the MPU9250.
+* **`imu/magnetometer`** ([sensor_msgs_ext/magnetometer](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/magnetometer.msg))
         The magnetic field measurements from the onboard AK8963 compass.
-* **`imu/temperature`** ([sensor_msgs/Temperature](http://docs.ros.org/api/sensor_msgs/html/msg/Temperature.html))
+* **`imu/temperature`** ([sensor_msgs_ext/temperature](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/temperature.msg))
         The die temperature of the MPU9250 sensor.
 
 
