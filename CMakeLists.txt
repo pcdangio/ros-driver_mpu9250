@@ -9,7 +9,7 @@ add_compile_options(-std=c++11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  sensor_msgs
+  sensor_msgs_ext
 )
 
 ## System dependencies are found with CMake's conventions
