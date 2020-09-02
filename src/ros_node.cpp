@@ -20,20 +20,15 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
 
     // Read parameters.
     ros::NodeHandle private_node("~");
-    int param_i2c_bus;
-    private_node.param<int>("i2c_bus", param_i2c_bus, 1);
-    int param_i2c_address;
-    private_node.param<int>("i2c_address", param_i2c_address, 0x68);
-    int param_interrupt_pin;
-    private_node.param<int>("interrupt_gpio_pin", param_interrupt_pin, 0);
-    int param_gyro_dlpf_frequency;
-    private_node.param<int>("gyro_dlpf_frequency", param_gyro_dlpf_frequency, 0);
-    int param_accel_dlpf_frequency;
-    private_node.param<int>("accel_dlpf_frequency", param_accel_dlpf_frequency, 0);
-    int param_gyro_fsr;
-    private_node.param<int>("gyro_fsr", param_gyro_fsr, 0);
-    int param_accel_fsr;
-    private_node.param<int>("accel_fsr", param_accel_fsr, 0);
+    int param_i2c_bus = private_node.param<int>("i2c_bus", 1);
+    int param_i2c_address = private_node.param<int>("i2c_address", 0x68);
+    int param_interrupt_pin = private_node.param<int>("interrupt_gpio_pin", 0);
+    int param_gyro_dlpf_frequency = private_node.param<int>("gyro_dlpf_frequency", 0);
+    int param_accel_dlpf_frequency = private_node.param<int>("accel_dlpf_frequency", 0);
+    int param_gyro_fsr = private_node.param<int>("gyro_fsr", 0);
+    int param_accel_fsr = private_node.param<int>("accel_fsr", 0);
+    float param_max_data_rate = private_node.param<float>("max_data_rate", 8000.0F);
+
 
     // Set up publishers.
     ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
@@ -49,11 +44,12 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
         // Initialize driver.
         ros_node::m_driver->initialize(static_cast<unsigned int>(param_i2c_bus), static_cast<unsigned int>(param_i2c_address), static_cast<unsigned int>(param_interrupt_pin));
         // Set parameters.
-        ros_node::m_driver->p_dlpf_frequencies(static_cast<driver::gyro_dlpf_frequency_type>(param_gyro_dlpf_frequency), static_cast<driver::accel_dlpf_frequency_type>(param_accel_dlpf_frequency));
+        float data_rate = ros_node::m_driver->p_dlpf_frequencies(static_cast<driver::gyro_dlpf_frequency_type>(param_gyro_dlpf_frequency), static_cast<driver::accel_dlpf_frequency_type>(param_accel_dlpf_frequency), param_max_data_rate);
         ros_node::m_driver->p_gyro_fsr(static_cast<driver::gyro_fsr_type>(param_gyro_fsr));
         ros_node::m_driver->p_accel_fsr(static_cast<driver::accel_fsr_type>(param_accel_fsr));
 
-        ROS_INFO_STREAM("MPU9250 driver successfully initialized on I2C bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address << ".");
+        ROS_INFO_STREAM("mpu9250 driver successfully initialized on i2c bus " << param_i2c_bus << " at address 0x" << std::hex << param_i2c_address);
+        ROS_INFO_STREAM("sensor data rate is " << data_rate << " hz");
     }
     catch (std::exception& e)
     {
@@ -85,7 +81,7 @@ void ros_node::deinitialize_driver()
     try
     {
         ros_node::m_driver->deinitialize();
-        ROS_INFO_STREAM("Driver successfully deinitialized.");
+        ROS_INFO_STREAM("driver successfully deinitialized");
     }
     catch (std::exception& e)
     {

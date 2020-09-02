@@ -121,6 +121,10 @@ A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running bef
         +/- 8g = 2
         +/- 16g = 3
 
+* **`~/max_data_rate`** (float, default: 8000)
+
+        The maximum allowable sensor data rate, in Hz. Data rate is normally calculated as half of the accel/gyro DLPF frequency (nyquist criterion). This parameter allows maximum cap on the data rate, regardless of the DLPF frequency.
+
 
 ## Bugs & Feature Requests
 

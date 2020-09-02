@@ -101,9 +101,11 @@ public:
     /// \brief p_dlpf_frequencies Sets the digital low-pass filter (DLPF) cutoff frequencies for the accelerometers and gyroscopes.
     /// \param gyro_frequency The cut-off frequency for the gyroscopes and temperature sensor.
     /// \param accel_frequency The cut-off frequency for the accelerometers.
-    /// \note This also sets an appropriate sample rate of approximately 2.5x the highest cutoff frequency.
+    /// \param max_sample_rate The maximum sample rate to use. Defaults to unlimited.
+    /// \returns The configured data sample rate (Hz)
+    /// \note The data rate is set to the nearest minimum value of lpf/2.5 or max_sample_rate.
     ///
-    void p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_dlpf_frequency_type accel_frequency);
+    float p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_dlpf_frequency_type accel_frequency, float max_sample_rate = 8000.0F);
     ///
     /// \brief p_gyro_fsr Sets the full scale range (FSR) of the gyroscopes.
     /// \param fsr The FSR to set.
