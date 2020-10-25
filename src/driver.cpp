@@ -6,6 +6,7 @@
 #include <cmath>
 #include <limits>
 
+// CONSTRUCTORS
 driver::driver()
 {
 
@@ -21,6 +22,7 @@ void driver::set_data_callback(std::function<void (data)> callback)
     driver::m_data_callback = callback;
 }
 
+// INITIALIZATION
 void driver::initialize(unsigned int i2c_bus, unsigned int i2c_address, unsigned int interrupt_gpio_pin)
 {
     // Initialize I2C:
@@ -91,6 +93,7 @@ void driver::deinitialize()
     deinitialize_i2c();
 }
 
+// PROPERTIES
 float driver::p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_dlpf_frequency_type accel_frequency, float max_sample_rate)
 {
     // Read the current configuration for gyro/temp.
@@ -288,6 +291,7 @@ void driver::p_accel_fsr(accel_fsr_type fsr)
     }
 }
 
+// METHODS
 void driver::read_data()
 {
     // Create data storage structure.
