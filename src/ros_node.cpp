@@ -7,6 +7,7 @@
 
 #include <cmath>
 
+// CONSTRUCTORS
 ros_node::ros_node(driver *driver, int argc, char **argv)
 {
     // Create a new driver.
@@ -70,6 +71,7 @@ ros_node::~ros_node()
     delete ros_node::m_driver;
 }
 
+// ROS
 void ros_node::spin()
 {
     // Spin.
@@ -79,6 +81,7 @@ void ros_node::spin()
     ros_node::deinitialize_driver();
 }
 
+// METHODS
 void ros_node::deinitialize_driver()
 {
     try
@@ -92,6 +95,7 @@ void ros_node::deinitialize_driver()
     }
 }
 
+// CALLBACKS
 void ros_node::data_callback(driver::data data)
 {
     // Create accelerometer message.

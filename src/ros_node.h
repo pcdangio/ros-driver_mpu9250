@@ -56,6 +56,7 @@ private:
     /// \brief deinitialize_driver Deinitializes the driver.
     void deinitialize_driver();
 
+    // CALLBACKS
     /// \brief data_callback The callback function for when new data is available.
     /// \param data The latest data read from the MPU9250/AK8963.
     void data_callback(driver::data data);
