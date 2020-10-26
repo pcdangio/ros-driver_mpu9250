@@ -4,8 +4,10 @@
 #define ROS_NODE_H
 
 #include "driver.h"
+#include "calibration.h"
 
 #include <ros/ros.h>
+#include <std_srvs/Trigger.h>
 
 /// \brief Implements the driver's ROS node functionality.
 class ros_node
@@ -24,11 +26,23 @@ public:
     void spin();
 
 private:
-    // VARIABLES
+    // COMPONENTS
     /// \brief m_driver The driver instance.
     driver* m_driver;
+
+    // CALIBRATIONS
+    /// \brief The accelerometer's calibration.
+    calibration m_calibration_accelerometer;
+    /// \brief The gyroscope's calibration.
+    calibration m_calibration_gyroscope;
+    /// \brief The magnetometer's calibration.
+    calibration m_calibration_magnetometer;
+
+    // ROS
     /// \brief m_node The node's handle.
     ros::NodeHandle* m_node;
+
+    // PUBLISHERS
     /// \brief Publisher for accelerometer data.
     ros::Publisher m_publisher_accelerometer;
     /// \brief Publisher for gyroscope data.

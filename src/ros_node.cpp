@@ -29,6 +29,9 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     int param_accel_fsr = private_node.param<int>("accel_fsr", 0);
     float param_max_data_rate = private_node.param<float>("max_data_rate", 8000.0F);
 
+    // Read calibrations.
+    ros_node::m_calibration_accelerometer.load(private_node, "calibration_accelerometer");
+    ros_node::m_calibration_magnetometer.load(private_node, "calibration_magnetometer");
 
     // Set up publishers.
     ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::acceleration>("imu/accelerometer", 1);
@@ -97,6 +100,8 @@ void ros_node::data_callback(driver::data data)
     message_accel.x = static_cast<double>(data.accel_x) * 9.80665;
     message_accel.y = static_cast<double>(data.accel_y) * 9.80665;
     message_accel.z = static_cast<double>(data.accel_z) * 9.80665;
+    // Apply calibration.
+    ros_node::m_calibration_accelerometer.calibrate(message_accel.x, message_accel.y, message_accel.z);
     // Publish message.
     ros_node::m_publisher_accelerometer.publish(message_accel);
 
@@ -106,6 +111,8 @@ void ros_node::data_callback(driver::data data)
     message_gyro.x = static_cast<double>(data.gyro_x) * M_PI / 180.0;
     message_gyro.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;
     message_gyro.z = static_cast<double>(data.gyro_z) * M_PI / 180.0;
+    // Apply calibration.
+    ros_node::m_calibration_gyroscope.calibrate(message_gyro.x, message_gyro.y, message_gyro.z);
     // Publish message.
     ros_node::m_publisher_gyroscope.publish(message_gyro);
 
@@ -118,6 +125,8 @@ void ros_node::data_callback(driver::data data)
         message_mag.x = static_cast<double>(data.magneto_x) * 0.000001;
         message_mag.y = static_cast<double>(data.magneto_y) * 0.000001;
         message_mag.z = static_cast<double>(data.magneto_z) * 0.000001;
+        // Apply calibration.
+        ros_node::m_calibration_magnetometer.calibrate(message_mag.x, message_mag.y, message_mag.z);
         // Publish message.
         ros_node::m_publisher_magnetometer.publish(message_mag);
     }
