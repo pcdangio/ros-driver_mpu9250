@@ -40,6 +40,10 @@ void calibration::load(ros::NodeHandle& node_handle, std::string param_name)
         }
     }
 }
+void calibration::update(const Eigen::Matrix4d& new_transform)
+{
+    calibration::m_calibration = new_transform;
+}
 
 // CALIBRATION
 void calibration::calibrate(double& x, double& y, double& z)

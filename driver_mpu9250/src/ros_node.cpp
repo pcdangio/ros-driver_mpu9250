@@ -10,6 +10,9 @@
 // CONSTRUCTORS
 ros_node::ros_node(driver *driver, int argc, char **argv)
 {
+    // Initialize flags.
+    ros_node::f_gyroscope_calibrating = false;
+
     // Create a new driver.
     ros_node::m_driver = driver;
 
@@ -63,6 +66,9 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
         // Quit the node.
         ros::shutdown();
     }
+
+    // Perform initial gyroscope calibration.
+    ros_node::calibrate_gyroscope(500);
 }
 ros_node::~ros_node()
 {
@@ -79,6 +85,67 @@ void ros_node::spin()
 
     // Deinitialize driver.
     ros_node::deinitialize_driver();
+}
+
+// SERVICES
+bool ros_node::service_calibrate_gyroscope(driver_mpu9250_msgs::calibrate_gyroscopeRequest& request, driver_mpu9250_msgs::calibrate_gyroscopeResponse& response)
+{
+    response.success = ros_node::calibrate_gyroscope(request.averaging_period);
+    if(!response.success)
+    {
+        response.message = "failed to collect enough points for calibration";
+    }
+
+    return true;
+}
+bool ros_node::calibrate_gyroscope(uint32_t averaging_period)
+{
+    // Convert averaging period to duration.
+    ros::Duration averaging_duration(static_cast<double>(averaging_period) / 1000.0);
+
+    // Clear the collection window.
+    ros_node::m_gyroscope_calibration_window.clear();
+
+    // Enable the data collection.
+    ros_node::f_gyroscope_calibrating = true;
+
+    // Sleep while gyro data is collected on interrupt thread.
+    averaging_duration.sleep();
+
+    // Disable the data collection.
+    ros_node::f_gyroscope_calibrating = false;
+
+    // Check if the window contains data.
+    if(ros_node::m_gyroscope_calibration_window.size() < 5)
+    {
+        ROS_ERROR_STREAM("gyroscope calibration failed (not enough data: " << ros_node::m_gyroscope_calibration_window.size() << " points)");
+        return false;
+    }
+
+    // Iterate through window to calculate average.
+    Eigen::Vector3d average;
+    average.setZero();
+    for(auto point = ros_node::m_gyroscope_calibration_window.cbegin(); point != ros_node::m_gyroscope_calibration_window.cend(); ++point)
+    {
+        average += *point;
+    }
+    average /= static_cast<double>(ros_node::m_gyroscope_calibration_window.size());
+
+    // Clear window.
+    ros_node::m_gyroscope_calibration_window.clear();
+
+    // Create new homogeneous transform by subtracting out bias.
+    Eigen::Matrix4d calibration;
+    calibration.setIdentity();
+    calibration.block(0, 3, 3, 1) = -average;
+
+    // Update gyroscope calibration.
+    ros_node::m_calibration_gyroscope.update(calibration);
+
+    // Log success.
+    ROS_INFO_STREAM("gyroscope calibration completed with averaging period of " << averaging_period << " ms");
+
+    return true;
 }
 
 // METHODS

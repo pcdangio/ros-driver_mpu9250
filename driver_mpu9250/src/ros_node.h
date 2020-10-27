@@ -7,7 +7,9 @@
 #include "calibration.h"
 
 #include <ros/ros.h>
-#include <std_srvs/Trigger.h>
+#include <driver_mpu9250_msgs/calibrate_gyroscope.h>
+
+#include <deque>
 
 /// \brief Implements the driver's ROS node functionality.
 class ros_node
@@ -38,6 +40,16 @@ private:
     /// \brief The magnetometer's calibration.
     calibration m_calibration_magnetometer;
 
+    // GYROSCOPE CALIBRATION
+    /// \brief The calibration data window for the gyroscope.
+    std::deque<Eigen::Vector3d> m_gyroscope_calibration_window;
+    /// \brief Flag indiciating if the gyroscope is currently calibrating.
+    std::atomic<bool> f_gyroscope_calibrating;
+    /// \brief Runs a zero-velocity calibration on the gyroscope to remove bias.
+    /// \param averaging_period The number of milliseconds to average data over to calculate bias.
+    /// \returns TRUE if the calibration succeeded, otherwise FALSE.
+    bool calibrate_gyroscope(uint32_t averaging_period);
+
     // ROS
     /// \brief m_node The node's handle.
     ros::NodeHandle* m_node;
@@ -51,6 +63,15 @@ private:
     ros::Publisher m_publisher_magnetometer;
     /// \brief Publisher for temperature data.
     ros::Publisher m_publisher_temperature;
+
+    // SERVICES
+    /// \brief Service server for calibrating the gyroscope.
+    ros::ServiceServer m_service_calibrate_gyroscope;
+    /// \brief A service for calibrating the gyroscope.
+    /// \param request The service request.
+    /// \param response The service response.
+    /// \returns TRUE if the service completed successfully, otherwise FALSE.
+    bool service_calibrate_gyroscope(driver_mpu9250_msgs::calibrate_gyroscopeRequest& request, driver_mpu9250_msgs::calibrate_gyroscopeResponse& response);
 
     // METHODS
     /// \brief deinitialize_driver Deinitializes the driver.

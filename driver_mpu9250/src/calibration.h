@@ -15,11 +15,15 @@ public:
     /// \brief Creates a new calibration instance with a unity calibration matrix.
     calibration();
 
+    // CONFIGURATION
     /// \brief Loads a calibration matrix from a ROS parameter.
     /// \param node_handle The node handle to read the parameter from.
     /// \param param_name The name of the ROS parameter to read from.
     /// \note If the parameter doesn't exist or is invalid, the calibration remains unchanged.
     void load(ros::NodeHandle& node_handle, std::string param_name);
+    /// \brief Updates the calibration's transformation matrix.
+    /// \param new_calibration The new transformation matrix to set.
+    void update(const Eigen::Matrix4d& new_transform);
 
     // CALIBRATION
     /// \brief Performs an in-place calibration on a 3D point.
