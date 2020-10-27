@@ -1,0 +1,6 @@
+# Requests for the IMU to perform a zero-velocity calibration of the gyroscope.
+
+uint32 averaging_period     # The number of milliseconds to average the bias calculation over.
+---
+bool success                # TRUE if the calibration was successful, otherwise FALSE.
+string message              # If unsuccesful, reports the reason.

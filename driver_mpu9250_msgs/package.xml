@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>driver_mpu9250</name>
+
+  <name>driver_mpu9250_msgs</name>
   <version>1.0.0</version>
-  <description>A ROS driver for the InvenSense MPU9250 9DoF IMU.</description>
-  <license>MIT</license>
+  <description>Provides messages and services for interacting with the driver_mpu9250 node.</description>
 
   <author email="pcdangio@gmail.com">Paul D'Angio</author>
   <maintainer email="pcdangio@gmail.com">Paul D'Angio</maintainer>
 
+  <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
-  <depend>sensor_msgs_ext</depend>
+  <build_depend>message_generation</build_depend>
 
 </package>

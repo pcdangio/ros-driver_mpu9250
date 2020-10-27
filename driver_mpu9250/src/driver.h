@@ -1,7 +1,7 @@
 /// \file driver.h
 /// \brief Defines the MPU9250 driver class.
-#ifndef DRIVER_H
-#define DRIVER_H
+#ifndef MPU9250_DRIVER_H
+#define MPU9250_DRIVER_H
 
 #include <functional>
 
