@@ -33,4 +33,5 @@ generate_messages(
 
 # Generage catkin package.
 catkin_package(
-#  CATKIN_DEPENDS other_catkin_pkg)
+#  CATKIN_DEPENDS other_catkin_pkg
+)
