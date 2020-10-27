@@ -61,6 +61,9 @@ A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running bef
 * **`imu/temperature`** ([sensor_msgs_ext/temperature](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/temperature.msg))
         The die temperature of the MPU9250 sensor.
 
+#### Services
+* **`imu/calibrate_gyroscope`** ([driver_mpu9250_msgs/calibrate_gyroscope](https://github.com/pcdangio/ros-driver_mpu9250/blob/master/driver_mpu9250_msgs/srv/calibrate_gyroscope.srv))
+        Calibrates the gyroscope by calculating and removing gyroscope bias. The bias is calculated by averaging gyroscope data over an averaging period.
 
 #### Parameters
 
