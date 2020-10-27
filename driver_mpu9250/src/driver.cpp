@@ -299,7 +299,16 @@ void driver::read_data()
 
     // Burst read accel, temp, and gyro data.
     char atg_buffer[14];
-    read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 14, atg_buffer);
+    try
+    {
+        read_mpu9250_registers(driver::register_mpu9250_type::ACCEL_X_HIGH, 14, atg_buffer);
+    }
+    catch(const std::exception& e)
+    {
+        // Quit before callback. Do not report error in loop.
+        return;
+    }
+    
 
     // Parse out accel data.
     data.accel_x = driver::m_accel_fsr * static_cast<float>(static_cast<short>(be16toh(*reinterpret_cast<unsigned short*>(&atg_buffer[0])))) / 32768.0f;
@@ -318,7 +327,15 @@ void driver::read_data()
 
     // Burst read magnetometer data.
     char magneto_buffer[7];
-    read_ak8963_registers(driver::register_ak8963_type::X_LOW, 7, magneto_buffer);
+    try
+    {
+        read_ak8963_registers(driver::register_ak8963_type::X_LOW, 7, magneto_buffer);
+    }
+    catch(const std::exception& e)
+    {
+        // Quit before callback. Do not report error in loop.
+        return;
+    }
     // Check if there was a magnetic overflow.
     if(magneto_buffer[6] & 0x08)
     {
@@ -349,7 +366,15 @@ void driver::read_data()
     }
 
     // Read interrupt status register to clear interrupt.
-    read_mpu9250_register(driver::register_mpu9250_type::INT_STATUS);
+    try
+    {
+        read_mpu9250_register(driver::register_mpu9250_type::INT_STATUS);
+    }
+    catch(const std::exception& e)
+    {
+        // Quit before callback. Do not report error in loop.
+        return;
+    }
 
     // Initiate the data callback.
     driver::m_data_callback(data);
