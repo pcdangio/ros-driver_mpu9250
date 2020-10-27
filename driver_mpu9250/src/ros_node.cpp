@@ -67,6 +67,9 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
         ros::shutdown();
     }
 
+    // Set up services.
+    ros_node::m_service_calibrate_gyroscope = ros_node::m_node->advertiseService("imu/calibrate_gyroscope", &ros_node::service_calibrate_gyroscope, this);
+
     // Perform initial gyroscope calibration.
     ros_node::calibrate_gyroscope(500);
 }
@@ -182,6 +185,11 @@ void ros_node::data_callback(driver::data data)
     message_gyro.x = static_cast<double>(data.gyro_x) * M_PI / 180.0;
     message_gyro.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;
     message_gyro.z = static_cast<double>(data.gyro_z) * M_PI / 180.0;
+    // If gyroscope calibration is running, add uncalibrate data to window.
+    if(ros_node::f_gyroscope_calibrating)
+    {
+        ros_node::m_gyroscope_calibration_window.push_back({message_gyro.x, message_gyro.y, message_gyro.z});
+    }
     // Apply calibration.
     ros_node::m_calibration_gyroscope.calibrate(message_gyro.x, message_gyro.y, message_gyro.z);
     // Publish message.
