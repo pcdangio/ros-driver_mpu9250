@@ -196,7 +196,7 @@ void ros_node::data_callback(driver::data data)
     ros_node::m_publisher_gyroscope.publish(message_gyro);
 
     // Check if there was a magneto overflow.
-    if(isnan(data.magneto_x) == false)
+    if(std::isnan(data.magneto_x) == false)
     {
         // Create magneto message.
         sensor_msgs_ext::magnetic_field message_mag;

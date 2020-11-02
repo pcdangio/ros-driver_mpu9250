@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <driver_mpu9250_msgs/calibrate_gyroscope.h>
 
+#include <atomic>
 #include <deque>
 
 /// \brief Implements the driver's ROS node functionality.
