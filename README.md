@@ -48,7 +48,7 @@ For example, to run the node using a driver for a Raspberry Pi:
 
 ### rpi_node
 
-A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running before starting this node.
+A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running before starting this node, and that your username is added to the 'gpio' group.
 
 
 #### Published Topics
