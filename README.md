@@ -67,66 +67,57 @@ A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running bef
 
 #### Parameters
 
-* **`~/i2c_bus`** (int, default: 1)
-
-        The I2C bus to communicate with the MPU9250 over.
+* **`~/i2c_bus`** (int, default: 1)  
+The I2C bus to communicate with the MPU9250 over.
 
 * **`~/i2c_address`** (int, default: 0x68)
+  The I2C address of the MPU9250.
 
-        The I2C address of the MPU9250.
+* **`~/interrupt_gpio_pin`** (int, default: 0)  
+The GPIO input pin connected to the MPU9250's interrupt pin. **NOTE:** [You must use GPIO numbers, not pin numbers.](http://abyz.me.uk/rpi/pigpio/index.html#Type_3)
 
-* **`~/interrupt_gpio_pin`** (int, default: 0)
+* **`~/gyro_dlpf_frequency`** (int, default: 0)  
+An enum value representing the digital low pass filter (DLPF) cutoff frequency for the gyroscopes.  
+NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
+Enumerated Values:  
+250Hz = 0  
+184Hz = 1  
+92Hz = 2  
+41Hz = 3  
+20Hz = 4  
+10Hz = 5  
+5Hz = 6
 
-        The GPIO input pin connected to the MPU9250's interrupt pin.
+* **`~/accel_dlpf_frequency`** (int, default: 0)  
+An enum value representing the digital low pass filter (DLPF) cutoff frequency for the accelerometers.  
+NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
+Enumerated Values:  
+460Hz = 0  
+184Hz = 1  
+92Hz = 2  
+41Hz = 3  
+20Hz = 4  
+10Hz = 5  
+5Hz = 6
 
-* **`~/gyro_dlpf_frequency`** (int, default: 0)
+* **`~/gyro_fsr`** (int, default: 0)  
+The full scale range (FSR) of the gyroscopes.  
+Enumerated Values:  
++/- 250deg/sec = 0  
++/- 500deg/sec = 1  
++/- 1000deg/sec = 2  
++/- 2000deg/sec = 3
 
-        An enum value representing the digital low pass filter (DLPF) cutoff frequency for the gyroscopes.
-        NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).
-        Enumerated Values:
-        250Hz = 0
-        184Hz = 1
-        92Hz = 2
-        41Hz = 3
-        20Hz = 4
-        10Hz = 5
-        5Hz = 6
+* **`~/accel_fsr`** (int, default: 0)  
+The full scale range (FSR) of the accelerometers.  
+Enumerated Values:  
++/- 2g = 0  
++/- 4g = 1  
++/- 8g = 2  
++/- 16g = 3
 
-* **`~/accel_dlpf_frequency`** (int, default: 0)
-
-        An enum value representing the digital low pass filter (DLPF) cutoff frequency for the accelerometers.
-        NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).
-        Enumerated Values:
-        460Hz = 0
-        184Hz = 1
-        92Hz = 2
-        41Hz = 3
-        20Hz = 4
-        10Hz = 5
-        5Hz = 6
-
-
-* **`~/gyro_fsr`** (int, default: 0)
-
-        The full scale range (FSR) of the gyroscopes.
-        Enumerated Values:
-        +/- 250deg/sec = 0
-        +/- 500deg/sec = 1
-        +/- 1000deg/sec = 2
-        +/- 2000deg/sec = 3
-
-* **`~/accel_fsr`** (int, default: 0)
-
-        The full scale range (FSR) of the accelerometers.
-        Enumerated Values:
-        +/- 2g = 0
-        +/- 4g = 1
-        +/- 8g = 2
-        +/- 16g = 3
-
-* **`~/max_data_rate`** (float, default: 8000)
-
-        The maximum allowable sensor data rate, in Hz. Data rate is normally calculated as half of the accel/gyro DLPF frequency (nyquist criterion). This parameter allows maximum cap on the data rate, regardless of the DLPF frequency.
+* **`~/max_data_rate`** (float, default: 8000)  
+The maximum allowable sensor data rate, in Hz. Data rate is normally calculated as half of the accel/gyro DLPF frequency (nyquist criterion). This parameter allows maximum cap on the data rate, regardless of the DLPF frequency.
 
 
 ## Bugs & Feature Requests
