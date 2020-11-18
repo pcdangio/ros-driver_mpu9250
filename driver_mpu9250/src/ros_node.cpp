@@ -61,10 +61,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     catch (std::exception& e)
     {
         ROS_FATAL_STREAM(e.what());
-        // Deinitialize driver.
-        ros_node::deinitialize_driver();
-        // Quit the node.
-        ros::shutdown();
+        exit(1);
     }
 
     // Set up services.
