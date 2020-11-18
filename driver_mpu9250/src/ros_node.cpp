@@ -4,6 +4,7 @@
 #include <sensor_msgs_ext/angular_velocity.h>
 #include <sensor_msgs_ext/magnetic_field.h>
 #include <sensor_msgs_ext/temperature.h>
+#include <sensor_msgs_ext/covariance.h>
 
 #include <cmath>
 
@@ -37,12 +38,12 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     ros_node::m_calibration_accelerometer.load(private_node, "calibration_accelerometer");
     ros_node::m_calibration_magnetometer.load(private_node, "calibration_magnetometer");
 
-    // Set up publishers.
+    // Set up data publishers.
     ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::acceleration>("imu/accelerometer", 1);
     ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::angular_velocity>("imu/gyroscope", 1);
     ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetic_field>("imu/magnetometer", 1);
     ros_node::m_publisher_temperature = ros_node::m_node->advertise<sensor_msgs_ext::temperature>("imu/temperature", 1);
-
+    
     // Initialize the driver and set parameters.
     try
     {
@@ -63,6 +64,9 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
         ROS_FATAL_STREAM(e.what());
         exit(1);
     }
+
+    // Publish covariance matrices.
+    ros_node::publish_covariance();
 
     // Set up services.
     ros_node::m_service_calibrate_gyroscope = ros_node::m_node->advertiseService("imu/calibrate_gyroscope", &ros_node::service_calibrate_gyroscope, this);
@@ -143,6 +147,44 @@ bool ros_node::calibrate_gyroscope(uint32_t averaging_period)
 }
 
 // METHODS
+void ros_node::publish_covariance()
+{
+    // Get a private nodehandle for reading parameters.
+    ros::NodeHandle private_node("~");
+
+    // Create a publisher and publish a latched covariance message for each sensor.
+    // NOTE: Variances are read from parameters. Default values are from testing.
+            
+    // Accelerometer
+    ros_node::m_publisher_covariance_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::covariance>("imu/accelerometer/covariance", 1, true);
+    sensor_msgs_ext::covariance covariance_accelerometer;
+    covariance_accelerometer.dimensions = 3;
+    covariance_accelerometer.covariance.resize(9, 0.0);
+    covariance_accelerometer.covariance[0] = private_node.param<double>("variance/accelerometer/x", 5e-4);
+    covariance_accelerometer.covariance[4] = private_node.param<double>("variance/accelerometer/y", 5e-4);
+    covariance_accelerometer.covariance[8] = private_node.param<double>("variance/accelerometer/z", 5e-4);
+    ros_node::m_publisher_covariance_accelerometer.publish(covariance_accelerometer);
+
+    // Gyroscope
+    ros_node::m_publisher_covariance_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::covariance>("imu/gyroscope/covariance", 1, true);
+    sensor_msgs_ext::covariance covariance_gyroscope;
+    covariance_gyroscope.dimensions = 3;
+    covariance_gyroscope.covariance.resize(9, 0.0);
+    covariance_gyroscope.covariance[0] = private_node.param<double>("variance/gyroscope/x", 3e-6);
+    covariance_gyroscope.covariance[4] = private_node.param<double>("variance/gyroscope/y", 3e-6);
+    covariance_gyroscope.covariance[8] = private_node.param<double>("variance/gyroscope/z", 3e-6);
+    ros_node::m_publisher_covariance_gyroscope.publish(covariance_gyroscope);
+
+    // Magnetometer
+    ros_node::m_publisher_covariance_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::covariance>("imu/magnetometer/covariance", 1, true);
+    sensor_msgs_ext::covariance covariance_magnetometer;
+    covariance_magnetometer.dimensions = 3;
+    covariance_magnetometer.covariance.resize(9, 0.0);
+    covariance_magnetometer.covariance[0] = private_node.param<double>("variance/magnetometer/x", 4.8e-13);
+    covariance_magnetometer.covariance[4] = private_node.param<double>("variance/magnetometer/y", 4.8e-13);
+    covariance_magnetometer.covariance[8] = private_node.param<double>("variance/magnetometer/z", 4.8e-13);
+    ros_node::m_publisher_covariance_magnetometer.publish(covariance_magnetometer);
+}
 void ros_node::deinitialize_driver()
 {
     try

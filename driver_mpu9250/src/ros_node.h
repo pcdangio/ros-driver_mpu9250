@@ -54,7 +54,7 @@ private:
     /// \brief m_node The node's handle.
     std::shared_ptr<ros::NodeHandle> m_node;
 
-    // PUBLISHERS
+    // PUBLISHERS - DATA
     /// \brief Publisher for accelerometer data.
     ros::Publisher m_publisher_accelerometer;
     /// \brief Publisher for gyroscope data.
@@ -63,6 +63,14 @@ private:
     ros::Publisher m_publisher_magnetometer;
     /// \brief Publisher for temperature data.
     ros::Publisher m_publisher_temperature;
+
+    // PUBLISHERS - COVARIANCE
+    /// \brief Publisher for accelerometer covariance.
+    ros::Publisher m_publisher_covariance_accelerometer;
+    /// \brief Publisher for gyroscope covariance.
+    ros::Publisher m_publisher_covariance_gyroscope;
+    /// \brief Publisher for magnetometer covariance.
+    ros::Publisher m_publisher_covariance_magnetometer;
 
     // SERVICES
     /// \brief Service server for calibrating the gyroscope.
@@ -74,6 +82,8 @@ private:
     bool service_calibrate_gyroscope(driver_mpu9250_msgs::calibrate_gyroscopeRequest& request, driver_mpu9250_msgs::calibrate_gyroscopeResponse& response);
 
     // METHODS
+    /// \brief Publishes covariance matrices.
+    void publish_covariance();
     /// \brief deinitialize_driver Deinitializes the driver.
     void deinitialize_driver();
 
