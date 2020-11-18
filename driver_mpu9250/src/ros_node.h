@@ -21,8 +21,7 @@ public:
     /// \param driver The MPU9250 driver instance.
     /// \param argc Number of main() args.
     /// \param argv The main() args.
-    ros_node(driver* driver, int argc, char **argv);
-    ~ros_node();
+    ros_node(std::shared_ptr<driver> driver, int argc, char **argv);
 
     // METHODS
     /// \brief spin Runs the node.
@@ -31,7 +30,7 @@ public:
 private:
     // COMPONENTS
     /// \brief m_driver The driver instance.
-    driver* m_driver;
+    std::shared_ptr<driver> m_driver;
 
     // CALIBRATIONS
     /// \brief The accelerometer's calibration.
@@ -53,7 +52,7 @@ private:
 
     // ROS
     /// \brief m_node The node's handle.
-    ros::NodeHandle* m_node;
+    std::shared_ptr<ros::NodeHandle> m_node;
 
     // PUBLISHERS
     /// \brief Publisher for accelerometer data.

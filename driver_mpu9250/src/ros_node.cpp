@@ -8,7 +8,7 @@
 #include <cmath>
 
 // CONSTRUCTORS
-ros_node::ros_node(driver *driver, int argc, char **argv)
+ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
 {
     // Initialize flags.
     ros_node::f_gyroscope_calibrating = false;
@@ -20,7 +20,7 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
     ros::init(argc, argv, "driver_mpu9250");
 
     // Get the node's handle.
-    ros_node::m_node = new ros::NodeHandle();
+    ros_node::m_node = std::make_shared<ros::NodeHandle>();
 
     // Read parameters.
     ros::NodeHandle private_node("~");
@@ -72,12 +72,6 @@ ros_node::ros_node(driver *driver, int argc, char **argv)
 
     // Perform initial gyroscope calibration.
     ros_node::calibrate_gyroscope(500);
-}
-ros_node::~ros_node()
-{
-    // Clean up resources.
-    delete ros_node::m_node;
-    delete ros_node::m_driver;
 }
 
 // ROS
