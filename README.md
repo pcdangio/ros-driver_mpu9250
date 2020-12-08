@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package includes driver software for the InvenSense [MPU9250] 9DoF IMU.
+This package includes driver software for the InvenSense [MPU9250] 9DoF IMU. It provides a base driver class that allows a device specific (e.g. RPi, Arduino, etc.) driver to be easily derived and implemented. In it's current state, this repository includes a derived driver for the Raspberry Pi using pigpio.
 
 **Keywords:** mpu9250 imu driver raspberry_pi
 
@@ -43,6 +43,24 @@ Run any of the driver nodes with (where xxx is the driver type):
 For example, to run the node using a driver for a Raspberry Pi:
 
         rosrun driver_mpu9250 driver_mpu9250_rpi
+
+### Creating Device Drivers
+
+This package uses polymorphism with a base driver class to enable drivers to be built for a variety of hardware interfaces. To create your own device-specific driver:
+- Create a new class for your device driver that extends the base driver class in `src/driver.h`
+- In your derived driver class, implement the several pure abstract functions of the base driver class
+- Create a new main.cpp that instantiates your derived class and passes it to the `src/ros_node.h` instance through polymorphism before running the node.
+- Add the new main.cpp to your CMakeLists.txt as a new node executable.
+
+You can refer to the following files in this package as an example for creating your custom device driver:
+```
+src/rpi_driver.h
+src/rpi_driver.cpp
+src/main_rpi.cpp
+CMakeLists.txt
+```
+
+If you have created and tested a driver for a device not already covered in this package, please feel free to submit a pull request!
 
 ## Nodes
 
