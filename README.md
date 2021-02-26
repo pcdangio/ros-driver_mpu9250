@@ -29,20 +29,34 @@ The driver_mpu9250 package has been tested under [ROS] Melodic and Ubuntu 18.04.
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
-        cd catkin_workspace/src
-        git clone https://github.com/pcdangio/ros-driver_mpu9250.git driver_mpu9250
-        cd ../
-        catkin_make
+```bash
+# Switch to your catkin workspace directory.
+cd catkin_workspace
+
+# Clone the package into the workspace src directory.
+git clone https://github.com/pcdangio/ros-driver_mpu9250.git src/driver_mpu9250
+
+# Build the package.
+catkin_make
+```
 
 ## Usage
 
 Run any of the driver nodes with (where xxx is the driver type):
 
-        rosrun driver_mpu9250 driver_mpu9250_xxx
+```bash
+rosrun driver_mpu9250 driver_mpu9250_xxx
+```
 
 For example, to run the node using a driver for a Raspberry Pi:
 
-        rosrun driver_mpu9250 driver_mpu9250_rpi
+```bash
+# First, in a different terminal, start up the PiGPIO Daemon:
+sudo pigpiod
+
+# In a second terminal, start up the driver.
+rosrun driver_mpu9250 driver_mpu9250_rpi
+```
 
 ### Creating Device Drivers
 
