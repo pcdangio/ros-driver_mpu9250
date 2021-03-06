@@ -2,7 +2,7 @@
 
 #include <sensor_msgs_ext/accelerometer.h>
 #include <sensor_msgs_ext/gyroscope.h>
-#include <sensor_msgs_ext/magnetic_field.h>
+#include <sensor_msgs_ext/magnetometer.h>
 #include <sensor_msgs_ext/temperature.h>
 #include <sensor_msgs_ext/covariance.h>
 
@@ -41,7 +41,7 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     // Set up data publishers.
     ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
     ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::gyroscope>("imu/gyroscope", 1);
-    ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetic_field>("imu/magnetometer", 1);
+    ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetometer>("imu/magnetometer", 1);
     ros_node::m_publisher_temperature = ros_node::m_node->advertise<sensor_msgs_ext::temperature>("imu/temperature", 1);
     
     // Initialize the driver and set parameters.
@@ -232,7 +232,7 @@ void ros_node::data_callback(driver::data data)
     if(std::isnan(data.magneto_x) == false)
     {
         // Create magneto message.
-        sensor_msgs_ext::magnetic_field message_mag;
+        sensor_msgs_ext::magnetometer message_mag;
         // Fill magnetic field strengths (convert from uT to T)
         message_mag.x = static_cast<double>(data.magneto_x) * 0.000001;
         message_mag.y = static_cast<double>(data.magneto_y) * 0.000001;
