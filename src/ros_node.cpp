@@ -1,7 +1,7 @@
 #include "ros_node.h"
 
-#include <sensor_msgs_ext/acceleration.h>
-#include <sensor_msgs_ext/angular_velocity.h>
+#include <sensor_msgs_ext/accelerometer.h>
+#include <sensor_msgs_ext/gyroscope.h>
 #include <sensor_msgs_ext/magnetic_field.h>
 #include <sensor_msgs_ext/temperature.h>
 #include <sensor_msgs_ext/covariance.h>
@@ -39,8 +39,8 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     ros_node::m_calibration_magnetometer.load(private_node, "calibration_magnetometer");
 
     // Set up data publishers.
-    ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::acceleration>("imu/accelerometer", 1);
-    ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::angular_velocity>("imu/gyroscope", 1);
+    ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
+    ros_node::m_publisher_gyroscope = ros_node::m_node->advertise<sensor_msgs_ext::gyroscope>("imu/gyroscope", 1);
     ros_node::m_publisher_magnetometer = ros_node::m_node->advertise<sensor_msgs_ext::magnetic_field>("imu/magnetometer", 1);
     ros_node::m_publisher_temperature = ros_node::m_node->advertise<sensor_msgs_ext::temperature>("imu/temperature", 1);
     
@@ -86,7 +86,7 @@ void ros_node::spin()
 }
 
 // SERVICES
-bool ros_node::service_calibrate_gyroscope(driver_mpu9250_msgs::calibrate_gyroscopeRequest& request, driver_mpu9250_msgs::calibrate_gyroscopeResponse& response)
+bool ros_node::service_calibrate_gyroscope(sensor_msgs_ext::calibrate_gyroscopeRequest& request, sensor_msgs_ext::calibrate_gyroscopeResponse& response)
 {
     response.success = ros_node::calibrate_gyroscope(request.averaging_period);
     if(!response.success)
@@ -202,7 +202,7 @@ void ros_node::deinitialize_driver()
 void ros_node::data_callback(driver::data data)
 {
     // Create accelerometer message.
-    sensor_msgs_ext::acceleration message_accel;
+    sensor_msgs_ext::accelerometer message_accel;
     // Set accelerations (convert from g's to m/s^2)
     message_accel.x = static_cast<double>(data.accel_x) * 9.80665;
     message_accel.y = static_cast<double>(data.accel_y) * 9.80665;
@@ -213,7 +213,7 @@ void ros_node::data_callback(driver::data data)
     ros_node::m_publisher_accelerometer.publish(message_accel);
 
     // Create gyroscope message.
-    sensor_msgs_ext::angular_velocity message_gyro;
+    sensor_msgs_ext::gyroscope message_gyro;
     // Set rotation rates (convert from deg/sec to rad/sec)
     message_gyro.x = static_cast<double>(data.gyro_x) * M_PI / 180.0;
     message_gyro.y = static_cast<double>(data.gyro_y) * M_PI / 180.0;

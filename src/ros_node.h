@@ -7,7 +7,7 @@
 #include "calibration.h"
 
 #include <ros/ros.h>
-#include <driver_mpu9250_msgs/calibrate_gyroscope.h>
+#include <sensor_msgs_ext/calibrate_gyroscope.h>
 
 #include <atomic>
 #include <deque>
@@ -79,7 +79,7 @@ private:
     /// \param request The service request.
     /// \param response The service response.
     /// \returns TRUE if the service completed successfully, otherwise FALSE.
-    bool service_calibrate_gyroscope(driver_mpu9250_msgs::calibrate_gyroscopeRequest& request, driver_mpu9250_msgs::calibrate_gyroscopeResponse& response);
+    bool service_calibrate_gyroscope(sensor_msgs_ext::calibrate_gyroscopeRequest& request, sensor_msgs_ext::calibrate_gyroscopeResponse& response);
 
     // METHODS
     /// \brief Publishes covariance matrices.
