@@ -64,14 +64,6 @@ private:
     /// \brief Publisher for temperature data.
     ros::Publisher m_publisher_temperature;
 
-    // PUBLISHERS - COVARIANCE
-    /// \brief Publisher for accelerometer covariance.
-    ros::Publisher m_publisher_covariance_accelerometer;
-    /// \brief Publisher for gyroscope covariance.
-    ros::Publisher m_publisher_covariance_gyroscope;
-    /// \brief Publisher for magnetometer covariance.
-    ros::Publisher m_publisher_covariance_magnetometer;
-
     // SERVICES
     /// \brief Service server for calibrating the gyroscope.
     ros::ServiceServer m_service_calibrate_gyroscope;
@@ -82,8 +74,6 @@ private:
     bool service_calibrate_gyroscope(sensor_msgs_ext::calibrate_gyroscopeRequest& request, sensor_msgs_ext::calibrate_gyroscopeResponse& response);
 
     // METHODS
-    /// \brief Publishes covariance matrices.
-    void publish_covariance();
     /// \brief deinitialize_driver Deinitializes the driver.
     void deinitialize_driver();
 
