@@ -108,7 +108,7 @@ The 4x4 calibration matrix for the magnetometer in row-major order. See the [cal
 * **`~/i2c_bus`** (int, default: 1)  
 The I2C bus to communicate with the MPU9250 over.
 
-* **`~/i2c_address`** (int, default: 0x68)
+* **`~/i2c_address`** (int, default: 0x68)  
   The I2C address of the MPU9250.
 
 * **`~/interrupt_gpio_pin`** (int, default: 0)  
@@ -118,44 +118,51 @@ The GPIO input pin connected to the MPU9250's interrupt pin. **NOTE:** [You must
 An enum value representing the digital low pass filter (DLPF) cutoff frequency for the gyroscopes.  
 NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
 Enumerated Values:  
-250Hz = 0  
-184Hz = 1  
-92Hz = 2  
-41Hz = 3  
-20Hz = 4  
-10Hz = 5  
-5Hz = 6
+|Value|Cutoff Frequency (Hz)|Delay (ms)|  
+|:-:|:-:|:-:|  
+|0|250|0.97|  
+|1|184|2.9|  
+|2|92|3.9|  
+|3|41|5.9|  
+|4|20|9.9|  
+|5|10|17.85|  
+|6|5|33.48|
 
 * **`~/accel_dlpf_frequency`** (int, default: 0)  
 An enum value representing the digital low pass filter (DLPF) cutoff frequency for the accelerometers.  
 NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
 Enumerated Values:  
-460Hz = 0  
-184Hz = 1  
-92Hz = 2  
-41Hz = 3  
-20Hz = 4  
-10Hz = 5  
-5Hz = 6
+|Value|Cutoff Frequency (Hz)|Delay (ms)|  
+|:-:|:-:|:-:|  
+|0|218.1|1.88|   
+|2|99|2.88|  
+|3|44.8|4.88|  
+|4|21.2|8.87|  
+|5|10.2|16.83|  
+|6|5.05|32.48|
 
 * **`~/gyro_fsr`** (int, default: 0)  
 The full scale range (FSR) of the gyroscopes.  
 Enumerated Values:  
-+/- 250deg/sec = 0  
-+/- 500deg/sec = 1  
-+/- 1000deg/sec = 2  
-+/- 2000deg/sec = 3
+|Value|Range (deg/sec)|  
+|:-:|:-:|  
+|0|+/- 250|  
+|1|+/- 500|  
+|2|+/- 1000|  
+|3|+/- 2000|
 
 * **`~/accel_fsr`** (int, default: 0)  
 The full scale range (FSR) of the accelerometers.  
 Enumerated Values:  
-+/- 2g = 0  
-+/- 4g = 1  
-+/- 8g = 2  
-+/- 16g = 3
+|Value|Range (g)|  
+|:-:|:-:|  
+|0|+/- 2|  
+|1|+/- 4|  
+|2|+/- 8|  
+|3|+/- 16|
 
 * **`~/max_data_rate`** (float, default: 8000)  
-The maximum allowable sensor data rate, in Hz. Data rate is normally calculated as half of the accel/gyro DLPF frequency (nyquist criterion). This parameter allows maximum cap on the data rate, regardless of the DLPF frequency.
+The maximum allowable sensor data rate, in Hz. Data rate is normally calculated as 2.5x the DLPF frequency of the accelerometer or magnetometer (whichever is less) to implement a proper Nyquist sampling rate. This parameter sets a maximum cap on the data rate, regardless of the DLPF frequency used.
 
 
 ## Bugs & Feature Requests
