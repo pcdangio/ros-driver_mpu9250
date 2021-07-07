@@ -175,29 +175,24 @@ float driver::p_dlpf_frequencies(gyro_dlpf_frequency_type gyro_frequency, accel_
         accel_dlpf_frequency = 10;
         break;
     }
-    case driver::accel_dlpf_frequency_type::F_20HZ:
+    case driver::accel_dlpf_frequency_type::F_21HZ:
     {
-        accel_dlpf_frequency = 20;
+        accel_dlpf_frequency = 21;
         break;
     }
-    case driver::accel_dlpf_frequency_type::F_41HZ:
+    case driver::accel_dlpf_frequency_type::F_44HZ:
     {
-        accel_dlpf_frequency = 41;
+        accel_dlpf_frequency = 44;
         break;
     }
-    case driver::accel_dlpf_frequency_type::F_92HZ:
+    case driver::accel_dlpf_frequency_type::F_99HZ:
     {
-        accel_dlpf_frequency = 92;
+        accel_dlpf_frequency = 99;
         break;
     }
-    case driver::accel_dlpf_frequency_type::F_184HZ:
+    case driver::accel_dlpf_frequency_type::F_218HZ:
     {
-        accel_dlpf_frequency = 184;
-        break;
-    }
-    case driver::accel_dlpf_frequency_type::F_460HZ:
-    {
-        accel_dlpf_frequency = 460;
+        accel_dlpf_frequency = 218;
         break;
     }
     }

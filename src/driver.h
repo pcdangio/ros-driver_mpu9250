@@ -13,11 +13,10 @@ public:
     /// \brief Enumerates the digital low-pass filter (DLPF) cutoff frequencies for the accelerometers.
     enum class accel_dlpf_frequency_type
     {
-        F_460HZ = 0x00,
-        F_184HZ = 0x01,
-        F_92HZ = 0x02,
-        F_41HZ = 0x03,
-        F_20HZ = 0x04,
+        F_218HZ = 0x00,
+        F_99HZ = 0x02,
+        F_44HZ = 0x03,
+        F_21HZ = 0x04,
         F_10HZ = 0x05,
         F_5HZ = 0x06
     };
