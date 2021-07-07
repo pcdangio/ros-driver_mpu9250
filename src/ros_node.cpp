@@ -34,8 +34,8 @@ ros_node::ros_node(std::shared_ptr<driver> driver, int argc, char **argv)
     float param_max_data_rate = private_node.param<float>("max_data_rate", 8000.0F);
 
     // Read calibrations.
-    ros_node::m_calibration_accelerometer.load(private_node, "calibration_accelerometer");
-    ros_node::m_calibration_magnetometer.load(private_node, "calibration_magnetometer");
+    ros_node::m_calibration_accelerometer.load(private_node, "calibration/accelerometer");
+    ros_node::m_calibration_magnetometer.load(private_node, "calibration/magnetometer");
 
     // Set up data publishers.
     ros_node::m_publisher_accelerometer = ros_node::m_node->advertise<sensor_msgs_ext::accelerometer>("imu/accelerometer", 1);
