@@ -99,6 +99,12 @@ A Raspberry Pi driver for MPU9250.  Ensure that the pigpio daemon is running bef
 
 #### Parameters
 
+* **`~/calibration_accelerometer`** (double[], default: none)  
+The 4x4 calibration matrix for the accelerometer in row-major order. See the [calibration_imu](https://github.com/pcdangio/ros-calibration_imu) package for performing calibrations.
+
+* **`~/calibration_magnetometer`** (double[], default: none)  
+The 4x4 calibration matrix for the magnetometer in row-major order. See the [calibration_imu](https://github.com/pcdangio/ros-calibration_imu) package for performing calibrations.
+
 * **`~/i2c_bus`** (int, default: 1)  
 The I2C bus to communicate with the MPU9250 over.
 
