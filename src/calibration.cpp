@@ -39,6 +39,8 @@ void calibration::load(ros::NodeHandle& node_handle, std::string param_name)
             calibration::m_calibration(i,j) = components.at(k++);
         }
     }
+
+    ROS_INFO_STREAM("loaded calibration matrix from " << param_name);
 }
 void calibration::update(const Eigen::Matrix4d& new_transform)
 {
