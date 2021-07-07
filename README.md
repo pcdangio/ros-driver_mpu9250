@@ -119,7 +119,7 @@ An enum value representing the digital low pass filter (DLPF) cutoff frequency f
 NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
 Enumerated Values:  
 |Value|Cutoff Frequency (Hz)|Delay (ms)|  
-|:-:|:-:|:-:|  
+|:---:|:---:|:---:|  
 |0|250|0.97|  
 |1|184|2.9|  
 |2|92|3.9|  
@@ -133,7 +133,7 @@ An enum value representing the digital low pass filter (DLPF) cutoff frequency f
 NOTE: The publishing rate of Imu, MagneticField, and Temperature messages will be approximately 2.5x the gyro OR accel DLPF frequency (whichever is larger).  
 Enumerated Values:  
 |Value|Cutoff Frequency (Hz)|Delay (ms)|  
-|:-:|:-:|:-:|  
+|:---:|:---:|:---:|  
 |0|218.1|1.88|   
 |2|99|2.88|  
 |3|44.8|4.88|  
@@ -145,7 +145,7 @@ Enumerated Values:
 The full scale range (FSR) of the gyroscopes.  
 Enumerated Values:  
 |Value|Range (deg/sec)|  
-|:-:|:-:|  
+|:---:|:---:|  
 |0|+/- 250|  
 |1|+/- 500|  
 |2|+/- 1000|  
@@ -155,7 +155,7 @@ Enumerated Values:
 The full scale range (FSR) of the accelerometers.  
 Enumerated Values:  
 |Value|Range (g)|  
-|:-:|:-:|  
+|:---:|:---:|  
 |0|+/- 2|  
 |1|+/- 4|  
 |2|+/- 8|  
